@@ -1,0 +1,92 @@
+basePath: /api/v1
+definitions:
+  UserStatusResponse:
+    description: User status response
+    properties:
+      amount:
+        example: 100
+        type: integer
+      points:
+        example: 100
+        type: integer
+      walletAddress:
+        example: 0x1234..
+        type: string
+    type: object
+  UserTasksBody:
+    description: User tasks request body
+    properties:
+      walletAddress:
+        example: 0x1234..
+        type: string
+    type: object
+  UserTasksResponse:
+    description: User tasks response
+    properties:
+      amount:
+        example: 100
+        type: integer
+      points:
+        example: 100
+        type: integer
+      walletAddress:
+        example: 0x1234..
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Assignment 0720
+  title: Assignment 0720
+  version: "1.0"
+paths:
+  /user/{address}:
+    get:
+      consumes:
+      - application/json
+      description: Get user tasks status by address
+      parameters:
+      - description: Wallet address
+        in: path
+        name: address
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/UserStatusResponse'
+        "400":
+          description: Bad Request
+      summary: Get user tasks status by address
+      tags:
+      - user
+  /user/tasks:
+    post:
+      consumes:
+      - application/json
+      description: Get user points history for distributed tasks
+      parameters:
+      - description: User tasks request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/UserTasksBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/UserTasksResponse'
+            type: array
+        "400":
+          description: Bad Request
+      summary: Get user points history for distributed tasks
+      tags:
+      - user
+swagger: "2.0"

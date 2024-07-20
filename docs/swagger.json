@@ -1,0 +1,136 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Assignment 0720",
+        "title": "Assignment 0720",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/user/tasks": {
+            "post": {
+                "description": "Get user points history for distributed tasks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user points history for distributed tasks",
+                "parameters": [
+                    {
+                        "description": "User tasks request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserTasksBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UserTasksResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/user/{address}": {
+            "get": {
+                "description": "Get user tasks status by address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get user tasks status by address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Wallet address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/UserStatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "UserStatusResponse": {
+            "description": "User status response",
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "points": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "walletAddress": {
+                    "type": "string",
+                    "example": "0x1234.."
+                }
+            }
+        },
+        "UserTasksBody": {
+            "description": "User tasks request body",
+            "type": "object",
+            "properties": {
+                "walletAddress": {
+                    "type": "string",
+                    "example": "0x1234.."
+                }
+            }
+        },
+        "UserTasksResponse": {
+            "description": "User tasks response",
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "points": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "walletAddress": {
+                    "type": "string",
+                    "example": "0x1234.."
+                }
+            }
+        }
+    }
+}
