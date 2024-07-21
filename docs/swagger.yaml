@@ -3,12 +3,33 @@ definitions:
   UserStatusResponse:
     description: User status response
     properties:
-      amount:
-        example: 100
-        type: integer
+      createTime:
+        example: "2024-07-02T00:00:00Z"
+        type: string
       points:
         example: 100
         type: integer
+      status:
+        example: completed
+        type: string
+      taskDescription:
+        example: The user needs to swap at least 1000u
+        type: string
+      taskEndTime:
+        example: "2024-07-29T00:00:00Z"
+        type: string
+      taskName:
+        example: Onboarding Task
+        type: string
+      taskStartTime:
+        example: "2024-07-01T00:00:00Z"
+        type: string
+      totalAmount:
+        example: 100
+        type: integer
+      updateTime:
+        example: "2024-07-02T00:00:00Z"
+        type: string
       walletAddress:
         example: 0x1234..
         type: string
@@ -23,14 +44,17 @@ definitions:
   UserTasksResponse:
     description: User tasks response
     properties:
-      amount:
-        example: 100
-        type: integer
       points:
         example: 100
         type: integer
-      walletAddress:
-        example: 0x1234..
+      taskDescription:
+        example: The user needs to swap at least 1000u
+        type: string
+      taskName:
+        example: Onboarding Task
+        type: string
+      updateTime:
+        example: "2024-07-02T00:00:00Z"
         type: string
     type: object
 host: localhost:8080
@@ -57,7 +81,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/UserStatusResponse'
+            items:
+              $ref: '#/definitions/UserStatusResponse'
+            type: array
         "400":
           description: Bad Request
       summary: Get user tasks status by address

@@ -66,8 +66,10 @@ func RegisterHandlers(app *usecase.Application) *gin.Engine {
 	// Add user namespace
 	userGroup := v1.Group("/user")
 	{
+		// Get user tasks status by address
 		userGroup.GET("/tasks/:address", GetUserTaskStatus(app))
-		userGroup.GET("/tasks", GetUserTaskList(app))
+		// Get user points history for distributed tasks
+		userGroup.GET("/tasks", GetUserPointsHistory(app))
 	}
 
 	return r

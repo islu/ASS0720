@@ -75,7 +75,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/UserStatusResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/UserStatusResponse"
+                            }
                         }
                     },
                     "400": {
@@ -90,13 +93,41 @@
             "description": "User status response",
             "type": "object",
             "properties": {
-                "amount": {
-                    "type": "integer",
-                    "example": 100
+                "createTime": {
+                    "type": "string",
+                    "example": "2024-07-02T00:00:00Z"
                 },
                 "points": {
                     "type": "integer",
                     "example": 100
+                },
+                "status": {
+                    "type": "string",
+                    "example": "completed"
+                },
+                "taskDescription": {
+                    "type": "string",
+                    "example": "The user needs to swap at least 1000u"
+                },
+                "taskEndTime": {
+                    "type": "string",
+                    "example": "2024-07-29T00:00:00Z"
+                },
+                "taskName": {
+                    "type": "string",
+                    "example": "Onboarding Task"
+                },
+                "taskStartTime": {
+                    "type": "string",
+                    "example": "2024-07-01T00:00:00Z"
+                },
+                "totalAmount": {
+                    "type": "integer",
+                    "example": 100
+                },
+                "updateTime": {
+                    "type": "string",
+                    "example": "2024-07-02T00:00:00Z"
                 },
                 "walletAddress": {
                     "type": "string",
@@ -118,17 +149,21 @@
             "description": "User tasks response",
             "type": "object",
             "properties": {
-                "amount": {
-                    "type": "integer",
-                    "example": 100
-                },
                 "points": {
                     "type": "integer",
                     "example": 100
                 },
-                "walletAddress": {
+                "taskDescription": {
                     "type": "string",
-                    "example": "0x1234.."
+                    "example": "The user needs to swap at least 1000u"
+                },
+                "taskName": {
+                    "type": "string",
+                    "example": "Onboarding Task"
+                },
+                "updateTime": {
+                    "type": "string",
+                    "example": "2024-07-02T00:00:00Z"
                 }
             }
         }
