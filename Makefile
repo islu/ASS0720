@@ -3,13 +3,12 @@
 init:
 	go mod download
 	go install github.com/swaggo/swag/cmd/swag@latest
-build:
+generate:
 	swag fmt
 	swag init
 	sqlc generate
-	go build -o main
 build_and_run:
-	make build
+	go build -o main
 	./main
 run_docker_compose:
 	docker-compose up -d

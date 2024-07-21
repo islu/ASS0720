@@ -7,6 +7,6 @@ import (
 )
 
 // Get user points history for distributed tasks
-func (s *UserService) GetUserTaskList(ctx context.Context) ([]user.UserTask, error) {
-	return s.userTaskRepo.GetUserTaskList(ctx)
+func (s *UserService) GetUserPointsHistory(ctx context.Context, walletAddress string) ([]user.UserTask, error) {
+	return s.userTaskRepo.ListUserTask_Join(ctx, walletAddress)
 }

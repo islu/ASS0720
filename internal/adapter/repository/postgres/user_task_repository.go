@@ -7,11 +7,11 @@ import (
 	"github.com/islu/ASS0720/internal/domain/user"
 )
 
-func (r *PostgresRepository) GetUserTaskList(ctx context.Context) ([]user.UserTask, error) {
+func (r *PostgresRepository) ListUserTask_Join(ctx context.Context, walletAddress string) ([]user.UserTask, error) {
 
 	q := psqlc.New(r.connPool)
 
-	list, err := q.ListUserTask(ctx)
+	list, err := q.ListUserTask_Join(ctx, walletAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -19,9 +19,16 @@ func (r *PostgresRepository) GetUserTaskList(ctx context.Context) ([]user.UserTa
 	var result []user.UserTask
 	for _, task := range list {
 		result = append(result, user.UserTask{
-			WalletAddress: task.WalletAddress,
-			Points:        int(task.Point),
-			Amount:        task.Amount,
+			TaskName:        task.TaskName.String,
+			TaskDescription: task.TaskDesc.String,
+			TaskStartTime:   task.StartTime.Time,
+			TaskEndTime:     task.EndTime.Time,
+			WalletAddress:   task.WalletAddress,
+			Points:          int(task.Point),
+			TotalAmount:     task.TotalAmount,
+			Status:          task.Status,
+			CreateTime:      task.CreateTime,
+			UpdateTime:      task.UpdateTime,
 		})
 	}
 	return result, nil

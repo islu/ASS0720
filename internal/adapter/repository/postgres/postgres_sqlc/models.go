@@ -8,11 +8,21 @@ import (
 	"time"
 )
 
+type Task struct {
+	Seqno       int32
+	TaskGroupNo int32
+	TaskName    string
+	TaskDesc    string
+	StartTime   time.Time
+	EndTime     time.Time
+}
+
 type UserTask struct {
+	TaskSeqno     int32
 	WalletAddress string
-	Amount        int64
+	TotalAmount   int64
 	Point         int32
-	EventName     string
+	Status        string
 	CreateTime    time.Time
 	UpdateTime    time.Time
 }

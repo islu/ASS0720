@@ -8,7 +8,7 @@ import (
 
 type UserTaskRepository interface {
 	// Get user points history for distributed tasks
-	GetUserTaskList(ctx context.Context) ([]user.UserTask, error)
+	ListUserTask_Join(ctx context.Context, walletAddress string) ([]user.UserTask, error)
 }
 
 type UniswapClient interface {

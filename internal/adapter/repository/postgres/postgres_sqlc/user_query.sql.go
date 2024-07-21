@@ -7,31 +7,160 @@ package postgres_sqlc
 
 import (
 	"context"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const listUserTask = `-- name: ListUserTask :many
-SELECT wallet_address, amount, point, event_name, create_time, update_time FROM user_task
-ORDER BY wallet_address desc
+const createTask = `-- name: CreateTask :one
+INSERT INTO task (
+    task_group_no, task_name, task_desc, start_time, end_time
+) VALUES (
+    $1, $2, $3, $4, $5
+)
+RETURNING seqno, task_group_no, task_name, task_desc, start_time, end_time
 `
 
-// Get user points history for distributed tasks
+type CreateTaskParams struct {
+	TaskGroupNo int32
+	TaskName    string
+	TaskDesc    string
+	StartTime   time.Time
+	EndTime     time.Time
+}
+
+// Create task
 //
-//	SELECT wallet_address, amount, point, event_name, create_time, update_time FROM user_task
-//	ORDER BY wallet_address desc
-func (q *Queries) ListUserTask(ctx context.Context) ([]UserTask, error) {
-	rows, err := q.db.Query(ctx, listUserTask)
+//	INSERT INTO task (
+//	    task_group_no, task_name, task_desc, start_time, end_time
+//	) VALUES (
+//	    $1, $2, $3, $4, $5
+//	)
+//	RETURNING seqno, task_group_no, task_name, task_desc, start_time, end_time
+func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
+	row := q.db.QueryRow(ctx, createTask,
+		arg.TaskGroupNo,
+		arg.TaskName,
+		arg.TaskDesc,
+		arg.StartTime,
+		arg.EndTime,
+	)
+	var i Task
+	err := row.Scan(
+		&i.Seqno,
+		&i.TaskGroupNo,
+		&i.TaskName,
+		&i.TaskDesc,
+		&i.StartTime,
+		&i.EndTime,
+	)
+	return i, err
+}
+
+const listTaskByGroupNo = `-- name: ListTaskByGroupNo :many
+SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
+WHERE task_group_no = $1
+ORDER BY start_time
+`
+
+// Get task by task_group_no
+//
+//	SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
+//	WHERE task_group_no = $1
+//	ORDER BY start_time
+func (q *Queries) ListTaskByGroupNo(ctx context.Context, taskGroupNo int32) ([]Task, error) {
+	rows, err := q.db.Query(ctx, listTaskByGroupNo, taskGroupNo)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []UserTask
+	var items []Task
 	for rows.Next() {
-		var i UserTask
+		var i Task
 		if err := rows.Scan(
+			&i.Seqno,
+			&i.TaskGroupNo,
+			&i.TaskName,
+			&i.TaskDesc,
+			&i.StartTime,
+			&i.EndTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listUserTask_Join = `-- name: ListUserTask_Join :many
+SELECT
+    t.task_name,
+    t.task_desc,
+    t.start_time,
+    t.end_time,
+    ut.wallet_address,
+    ut.total_amount,
+    ut.point,
+    ut.status,
+    ut.create_time,
+    ut.update_time
+FROM user_task ut
+LEFT JOIN task t ON ut.task_seqno = t.seqno
+WHERE ut.wallet_address = $1
+ORDER BY t.start_time desc
+`
+
+type ListUserTask_JoinRow struct {
+	TaskName      pgtype.Text
+	TaskDesc      pgtype.Text
+	StartTime     pgtype.Timestamptz
+	EndTime       pgtype.Timestamptz
+	WalletAddress string
+	TotalAmount   int64
+	Point         int32
+	Status        string
+	CreateTime    time.Time
+	UpdateTime    time.Time
+}
+
+// Get user task
+//
+//	SELECT
+//	    t.task_name,
+//	    t.task_desc,
+//	    t.start_time,
+//	    t.end_time,
+//	    ut.wallet_address,
+//	    ut.total_amount,
+//	    ut.point,
+//	    ut.status,
+//	    ut.create_time,
+//	    ut.update_time
+//	FROM user_task ut
+//	LEFT JOIN task t ON ut.task_seqno = t.seqno
+//	WHERE ut.wallet_address = $1
+//	ORDER BY t.start_time desc
+func (q *Queries) ListUserTask_Join(ctx context.Context, walletAddress string) ([]ListUserTask_JoinRow, error) {
+	rows, err := q.db.Query(ctx, listUserTask_Join, walletAddress)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListUserTask_JoinRow
+	for rows.Next() {
+		var i ListUserTask_JoinRow
+		if err := rows.Scan(
+			&i.TaskName,
+			&i.TaskDesc,
+			&i.StartTime,
+			&i.EndTime,
 			&i.WalletAddress,
-			&i.Amount,
+			&i.TotalAmount,
 			&i.Point,
-			&i.EventName,
+			&i.Status,
 			&i.CreateTime,
 			&i.UpdateTime,
 		); err != nil {
