@@ -8,3 +8,8 @@ build:
 	swag init
 	sqlc generate
 	go build -o main
+build_and_run:
+	make build
+	./main
+run_docker_compose:
+	docker-compose up -d
