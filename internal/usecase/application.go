@@ -6,6 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"github.com/islu/ASS0720/internal/adapter/ethereum"
 	"github.com/islu/ASS0720/internal/adapter/repository/postgres"
 	"github.com/islu/ASS0720/internal/usecase/service/user"
 )
@@ -24,6 +25,9 @@ type ApplicationParams struct {
 	DBPassword   string
 	DBName       string
 	DBSchemaName string
+
+	// Alchemy
+	AlchemyAPIKey string
 }
 
 func NewApplication(ctx context.Context, param *ApplicationParams) (*Application, error) {
@@ -34,11 +38,18 @@ func NewApplication(ctx context.Context, param *ApplicationParams) (*Application
 		return nil, err
 	}
 
+	// Initialize ethereum client
+	ethereumClient := &ethereum.EthereumClient{
+		Env:           param.Environment,
+		AlchemyAPIKey: param.AlchemyAPIKey,
+	}
+
 	// New application
 	app := &Application{
 		Params: *param,
 		UserService: user.NewUserService(ctx, user.UserServiceParam{
-			UserTaskRepo: pgRepo,
+			UserTaskRepo:  pgRepo,
+			UniswapClient: ethereumClient,
 		}),
 	}
 	return app, nil

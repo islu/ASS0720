@@ -20,12 +20,16 @@ func initAppConfig() *usecase.ApplicationParams {
 	dbName := mustGetenv("DB_NAME")
 	dbSchemaName := "public"
 
+	// Alchemy
+	alchemyAPIKey := mustGetenv("ALCHEMY_API_KEY")
+
 	return &usecase.ApplicationParams{
-		Environment:  env,
-		DBUser:       dbUser,
-		DBPassword:   dbPwd,
-		DBName:       dbName,
-		DBSchemaName: dbSchemaName,
+		Environment:   env,
+		DBUser:        dbUser,
+		DBPassword:    dbPwd,
+		DBName:        dbName,
+		DBSchemaName:  dbSchemaName,
+		AlchemyAPIKey: alchemyAPIKey,
 	}
 }
 

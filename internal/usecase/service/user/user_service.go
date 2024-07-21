@@ -8,5 +8,5 @@ import (
 
 // Get user points history for distributed tasks
 func (s *UserService) GetUserTaskList(ctx context.Context) ([]user.UserTask, error) {
-	return s.userTaskRe.GetUserTaskList(ctx)
+	return s.userTaskRepo.GetUserTaskList(ctx)
 }

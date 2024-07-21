@@ -10,3 +10,8 @@ type UserTaskRepository interface {
 	// Get user points history for distributed tasks
 	GetUserTaskList(ctx context.Context) ([]user.UserTask, error)
 }
+
+type UniswapClient interface {
+	// Debug print
+	DebugPrint_UniswapPairV2SwapEvent()
+}

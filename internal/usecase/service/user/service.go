@@ -3,15 +3,18 @@ package user
 import "context"
 
 type UserService struct {
-	userTaskRe UserTaskRepository
+	userTaskRepo  UserTaskRepository
+	uniSwapClient UniswapClient
 }
 
 type UserServiceParam struct {
-	UserTaskRepo UserTaskRepository
+	UserTaskRepo  UserTaskRepository
+	UniswapClient UniswapClient
 }
 
 func NewUserService(_ context.Context, param UserServiceParam) *UserService {
 	return &UserService{
-		userTaskRe: param.UserTaskRepo,
+		userTaskRepo:  param.UserTaskRepo,
+		uniSwapClient: param.UniswapClient,
 	}
 }
