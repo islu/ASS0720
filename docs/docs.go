@@ -15,6 +15,43 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/dashboard/uniswap-log": {
+            "post": {
+                "description": "Update Uniswap USDC/ETH pair swap log",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dashboard"
+                ],
+                "summary": "Update Uniswap USDC/ETH pair swap log",
+                "parameters": [
+                    {
+                        "description": "Uniswap USDC/ETH pair request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UniswapUSDCETHPairBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SuccessMessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
         "/user/tasks": {
             "post": {
                 "description": "Get user points history for distributed tasks",
@@ -55,7 +92,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/{address}": {
+        "/user/tasks/{address}": {
             "get": {
                 "description": "Get user tasks status by address",
                 "consumes": [
@@ -95,6 +132,38 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "SuccessMessageResponse": {
+            "description": "Success message response for 200",
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 200
+                },
+                "name": {
+                    "type": "string",
+                    "example": "SUCCESS"
+                }
+            }
+        },
+        "UniswapUSDCETHPairBody": {
+            "description": "Uniswap USDC/ETH pair request body",
+            "type": "object",
+            "required": [
+                "endBlockNumber",
+                "startBlockNumber"
+            ],
+            "properties": {
+                "endBlockNumber": {
+                    "type": "integer",
+                    "example": 20358617
+                },
+                "startBlockNumber": {
+                    "type": "integer",
+                    "example": 20300000
+                }
+            }
+        },
         "UserStatusResponse": {
             "description": "User status response",
             "type": "object",
@@ -144,6 +213,9 @@ const docTemplate = `{
         "UserTasksBody": {
             "description": "User tasks request body",
             "type": "object",
+            "required": [
+                "walletAddress"
+            ],
             "properties": {
                 "walletAddress": {
                     "type": "string",

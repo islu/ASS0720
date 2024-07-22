@@ -31,7 +31,7 @@ type UserStatusResponse struct {
 //	@tags			user
 //	@accept			json
 //	@produce		json
-//	@router			/user/{address}   [get]
+//	@router			/user/tasks/{address}   [get]
 //	@param			address	path		string	true	"Wallet address"
 //	@success		200		{object}	[]router.UserStatusResponse
 //	@failure		400
@@ -73,7 +73,7 @@ func GetUserTaskStatus(app *usecase.Application) gin.HandlerFunc {
 
 // @description	User tasks request body
 type UserTasksBody struct {
-	WalletAddress string `json:"walletAddress" example:"0x1234.."`
+	WalletAddress string `json:"walletAddress" binding:"required" example:"0x1234.."`
 } //	@name	UserTasksBody
 
 // @description	User tasks response
@@ -133,5 +133,48 @@ func GetUserPointsHistory(app *usecase.Application) gin.HandlerFunc {
 			})
 		}
 		respondWithJSON(c, http.StatusOK, response)
+	}
+}
+
+/*
+	Dashboard
+*/
+
+// @description Uniswap USDC/ETH pair request body
+type UniswapUSDCETHPairBody struct {
+	StartBlockNumber int64 `json:"startBlockNumber" binding:"required" example:"20300000"`
+	EndBlockNumber   int64 `json:"endBlockNumber" binding:"required" example:"20358617"`
+} // @name UniswapUSDCETHPairBody
+
+// Update Uniswap USDC/ETH pair swap log
+//
+//	@summary		Update Uniswap USDC/ETH pair swap log
+//	@description	Update Uniswap USDC/ETH pair swap log
+//	@tags			dashboard
+//	@accept			json
+//	@produce		json
+//	@router			/dashboard/uniswap-log   [post]
+//	@param			body	body		router.UniswapUSDCETHPairBody	true	"Uniswap USDC/ETH pair request body"
+//	@success		200		{object}	router.SuccessMessage
+//	@failure		400
+func UpdateUniswapUSDCETHPairSwapLog(app *usecase.Application) gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+
+		var body UniswapUSDCETHPairBody
+		if err := c.BindJSON(&body); err != nil {
+			err = errors.Join(errors.New("[DashboardHandler][UpdateUniswapUSDCETHPairSwapLog] Bind JSON"), err)
+			respondWithError(c, common.NewError(common.ErrorCodeParameterInvalid, err))
+			return
+		}
+
+		err := app.UserService.UpdateUniswapUSDCETHPairSwapLog(c, body.StartBlockNumber, body.EndBlockNumber)
+		if err != nil {
+			err = errors.Join(errors.New("[DashboardHandler][UpdateUniswapUSDCETHPairSwapLog] Update Uniswap USDC/ETH pair swap log failed"), err)
+			respondWithError(c, common.NewError(common.ErrorCodeInternalProcess, err))
+			return
+		}
+
+		respondWithSuccess(c)
 	}
 }

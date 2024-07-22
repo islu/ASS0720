@@ -17,6 +17,17 @@ type Task struct {
 	EndTime     time.Time
 }
 
+type UniswapUsdcEthPairSwapLog struct {
+	BlockSender string
+	BlockNumber int64
+	BlockTime   time.Time
+	TxHash      string
+	Amount0In   int64
+	Amount0Out  int64
+	Amount1In   int64
+	Amount1Out  int64
+}
+
 type UserTask struct {
 	TaskSeqno     int32
 	WalletAddress string

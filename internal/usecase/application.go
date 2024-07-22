@@ -49,6 +49,7 @@ func NewApplication(ctx context.Context, param *ApplicationParams) (*Application
 		Params: *param,
 		UserService: user.NewUserService(ctx, user.UserServiceParam{
 			UserTaskRepo:  pgRepo,
+			BlockRepo:     pgRepo,
 			UniswapClient: ethereumClient,
 		}),
 	}

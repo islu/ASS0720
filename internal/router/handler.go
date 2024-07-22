@@ -72,5 +72,13 @@ func RegisterHandlers(app *usecase.Application) *gin.Engine {
 		userGroup.GET("/tasks", GetUserPointsHistory(app))
 	}
 
+	// Other handlers
+
+	// TODO: Require access control
+	dashboardGroup := v1.Group("/dashboard")
+	{
+		dashboardGroup.POST("/uniswap-log", UpdateUniswapUSDCETHPairSwapLog(app))
+	}
+
 	return r
 }

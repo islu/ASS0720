@@ -18,3 +18,24 @@ func (s *UserService) GetUserTaskStatus(ctx context.Context, walletAddress strin
 func (s *UserService) GetUserPointsHistory(ctx context.Context, walletAddress string) ([]user.UserTask, error) {
 	return s.userTaskRepo.ListUserTask_Join(ctx, walletAddress)
 }
+
+/*
+	Dashboard
+*/
+
+func (s *UserService) UpdateUniswapUSDCETHPairSwapLog(ctx context.Context, startBlockNumber, endBlockNumber int64) error {
+
+	data, err := s.uniSwapClient.GetUniswapPairV2SwapEvent(startBlockNumber, endBlockNumber)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range data {
+		_, err = s.blockRepo.CreateUniswapUSDCETHPairSwapLog(ctx, v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
