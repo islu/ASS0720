@@ -142,8 +142,8 @@ func GetUserPointsHistory(app *usecase.Application) gin.HandlerFunc {
 
 // @description Uniswap USDC/ETH pair request body
 type UniswapUSDCETHPairBody struct {
-	StartBlockNumber int64 `json:"startBlockNumber" binding:"required" example:"20300000"`
-	EndBlockNumber   int64 `json:"endBlockNumber" binding:"required" example:"20358617"`
+	StartBlockNumber int64 `json:"startBlockNumber" binding:"required" example:"20358617"`
+	EndBlockNumber   int64 `json:"endBlockNumber" binding:"required" example:"20358638"`
 } // @name UniswapUSDCETHPairBody
 
 // Update Uniswap USDC/ETH pair swap log

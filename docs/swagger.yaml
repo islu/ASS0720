@@ -14,10 +14,10 @@ definitions:
     description: Uniswap USDC/ETH pair request body
     properties:
       endBlockNumber:
-        example: 20358617
+        example: 20358638
         type: integer
       startBlockNumber:
-        example: 20300000
+        example: 20358617
         type: integer
     required:
     - endBlockNumber

@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
@@ -110,7 +111,7 @@ func (c *EthereumClient) GetUniswapPairV2SwapEvent(fromBlockNumber, toBlockNumbe
 			From:            from.Hex(),
 			BlockNumber:     vLog.BlockNumber,
 			TransactionHash: vLog.TxHash.Hex(),
-			Timestamp:       block.Time(),
+			Timestamp:       time.Unix(int64(block.Time()), 0),
 			Amount0In:       event.Amount0In.Uint64(),
 			Amount0Out:      event.Amount0Out.Uint64(),
 			Amount1Out:      event.Amount1Out.Uint64(),

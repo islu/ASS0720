@@ -156,11 +156,11 @@ const docTemplate = `{
             "properties": {
                 "endBlockNumber": {
                     "type": "integer",
-                    "example": 20358617
+                    "example": 20358638
                 },
                 "startBlockNumber": {
                     "type": "integer",
-                    "example": 20300000
+                    "example": 20358617
                 }
             }
         },

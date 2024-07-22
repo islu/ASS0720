@@ -23,7 +23,7 @@ func (r *PostgresRepository) CreateUniswapUSDCETHPairSwapLog(ctx context.Context
 	log, err := qtx.CreateUniswapUSDCETHPairSwapLog(ctx, psqlc.CreateUniswapUSDCETHPairSwapLogParams{
 		BlockSender: params.From,
 		BlockNumber: int64(params.BlockNumber),
-		BlockTime:   time.Unix(int64(params.BlockNumber), 0),
+		BlockTime:   params.Timestamp,
 		TxHash:      params.TransactionHash,
 		Amount0In:   int64(params.Amount0In),
 		Amount0Out:  int64(params.Amount0Out),
@@ -35,17 +35,9 @@ func (r *PostgresRepository) CreateUniswapUSDCETHPairSwapLog(ctx context.Context
 		return nil, err
 	}
 
-	result := &user.UniswapPairSwapEvent{
-		From:            params.From,
-		BlockNumber:     uint64(log.BlockNumber),
-		TransactionHash: log.TxHash,
-		Timestamp:       uint64(log.BlockTime.Unix()),
-		Amount0In:       uint64(log.Amount0In),
-		Amount0Out:      uint64(log.Amount0Out),
-		Amount1Out:      uint64(log.Amount1In),
-		Amount1In:       uint64(log.Amount1Out),
-	}
-	return result, tx.Commit(ctx)
+	result := buildUniswapPairSwapEvent(log)
+
+	return &result, tx.Commit(ctx)
 }
 
 // List Uniswap USDC/ETH pair swap log by sender
@@ -60,16 +52,7 @@ func (r *PostgresRepository) ListUniswapUSDCETHPairSwapLogBySender(ctx context.C
 
 	var result []user.UniswapPairSwapEvent
 	for _, log := range list {
-		result = append(result, user.UniswapPairSwapEvent{
-			From:            log.BlockSender,
-			BlockNumber:     uint64(log.BlockNumber),
-			TransactionHash: log.TxHash,
-			Timestamp:       uint64(log.BlockTime.Unix()),
-			Amount0In:       uint64(log.Amount0In),
-			Amount0Out:      uint64(log.Amount0Out),
-			Amount1In:       uint64(log.Amount1In),
-			Amount1Out:      uint64(log.Amount1Out),
-		})
+		result = append(result, buildUniswapPairSwapEvent(log))
 	}
 
 	return result, nil
@@ -90,17 +73,22 @@ func (r *PostgresRepository) ListUniswapUSDCETHPairSwapLogByTimestamp(ctx contex
 
 	var result []user.UniswapPairSwapEvent
 	for _, log := range list {
-		result = append(result, user.UniswapPairSwapEvent{
-			From:            log.BlockSender,
-			BlockNumber:     uint64(log.BlockNumber),
-			TransactionHash: log.TxHash,
-			Timestamp:       uint64(log.BlockTime.Unix()),
-			Amount0In:       uint64(log.Amount0In),
-			Amount0Out:      uint64(log.Amount0Out),
-			Amount1In:       uint64(log.Amount1In),
-			Amount1Out:      uint64(log.Amount1Out),
-		})
+		result = append(result, buildUniswapPairSwapEvent(log))
 	}
 
 	return result, nil
+}
+
+func buildUniswapPairSwapEvent(log psqlc.UniswapUsdcEthPairSwapLog) user.UniswapPairSwapEvent {
+
+	return user.UniswapPairSwapEvent{
+		From:            log.BlockSender,
+		BlockNumber:     uint64(log.BlockNumber),
+		TransactionHash: log.TxHash,
+		Timestamp:       log.BlockTime,
+		Amount0In:       uint64(log.Amount0In),
+		Amount0Out:      uint64(log.Amount0Out),
+		Amount1In:       uint64(log.Amount1In),
+		Amount1Out:      uint64(log.Amount1Out),
+	}
 }
