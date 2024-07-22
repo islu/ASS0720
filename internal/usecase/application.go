@@ -6,7 +6,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/islu/ASS0720/internal/adapter/ethereum"
+	"github.com/islu/ASS0720/internal/adapter/blockchain"
 	"github.com/islu/ASS0720/internal/adapter/repository/postgres"
 	"github.com/islu/ASS0720/internal/usecase/service/user"
 )
@@ -39,7 +39,7 @@ func NewApplication(ctx context.Context, param *ApplicationParams) (*Application
 	}
 
 	// Initialize ethereum client
-	ethereumClient := &ethereum.EthereumClient{
+	ethereumClient := &blockchain.EthereumClient{
 		Env:           param.Environment,
 		AlchemyAPIKey: param.AlchemyAPIKey,
 	}

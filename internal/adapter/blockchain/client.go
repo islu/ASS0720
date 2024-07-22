@@ -1,4 +1,4 @@
-package ethereum
+package blockchain
 
 type EthereumClient struct {
 	Env           string

@@ -1,4 +1,4 @@
-package ethereum
+package blockchain
 
 import (
 	"context"
@@ -13,6 +13,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+
+	"github.com/islu/ASS0720/internal/domain/user"
 )
 
 const (
@@ -25,6 +27,99 @@ const (
 	// Swap event signature
 	swapEventSig = "Swap(address,uint256,uint256,uint256,uint256,address)"
 )
+
+func (c *EthereumClient) GetUniswapPairV2SwapEvent(fromBlockNumber, toBlockNumber int64) ([]user.UniswapPairSwapEvent, error) {
+
+	// Connect to json rpc node
+	client, err := ethclient.Dial("https://eth-mainnet.g.alchemy.com/v2/" + c.AlchemyAPIKey)
+	if err != nil {
+		return nil, err
+	}
+
+	// Contract address
+	contractAddress := common.HexToAddress(uniswapPairV2Address)
+
+	// Swap event signature
+	swapEventSignature := []byte(swapEventSig)
+	swapEventHash := crypto.Keccak256Hash(swapEventSignature)
+
+	fromBlock := big.NewInt(fromBlockNumber)
+	toBlock := big.NewInt(toBlockNumber)
+
+	query := ethereum.FilterQuery{
+		FromBlock: fromBlock,
+		ToBlock:   toBlock,
+		Addresses: []common.Address{contractAddress},
+		Topics: [][]common.Hash{
+			{swapEventHash},
+		},
+	}
+
+	// Get logs
+	logs, err := client.FilterLogs(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse ABI
+	parsedABI, err := abi.JSON(strings.NewReader(uniswapV2PairABI))
+	if err != nil {
+		return nil, err
+	}
+
+	var swapEvents []user.UniswapPairSwapEvent
+	for i := 0; i < len(logs); i++ {
+		vLog := logs[i]
+
+		blockNumber := big.NewInt(int64(vLog.BlockNumber))
+		txIndex := vLog.TxIndex
+
+		// Get block
+		block, err := client.BlockByNumber(context.Background(), blockNumber)
+		if err != nil {
+			log.Fatalf("Failed to get block: %v", err)
+		}
+		// Get transaction
+		tx := block.Transactions()[txIndex]
+
+		from, err := types.Sender(types.NewLondonSigner(tx.ChainId()), tx)
+		if err != nil {
+			return nil, err
+		}
+
+		// Decode event data
+		event := struct {
+			Sender     common.Address
+			Amount0In  *big.Int
+			Amount1In  *big.Int
+			Amount0Out *big.Int
+			Amount1Out *big.Int
+			To         common.Address
+		}{}
+
+		err = parsedABI.UnpackIntoInterface(&event, "Swap", vLog.Data)
+		if err != nil {
+			return nil, err
+		}
+
+		// Decode Topics
+		event.Sender = common.HexToAddress(vLog.Topics[1].Hex())
+		event.To = common.HexToAddress(vLog.Topics[2].Hex())
+
+		swapEvents = append(swapEvents, user.UniswapPairSwapEvent{
+			From:            from.Hex(),
+			BlockNumber:     vLog.BlockNumber,
+			TransactionHash: vLog.TxHash.Hex(),
+			Timestamp:       block.Time(),
+			Amount0In:       event.Amount0In.Uint64(),
+			Amount0Out:      event.Amount0Out.Uint64(),
+			Amount1Out:      event.Amount1Out.Uint64(),
+			Amount1In:       event.Amount1In.Uint64(),
+		})
+	}
+
+	return swapEvents, nil
+}
 
 func (c *EthereumClient) DebugPrint_UniswapPairV2SwapEvent() {
 	// Connect to json rpc node
