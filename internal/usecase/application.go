@@ -21,9 +21,11 @@ type ApplicationParams struct {
 	Environment string
 
 	// Database
+	DBHost       string
+	DBPort       string
+	DBName       string
 	DBUser       string
 	DBPassword   string
-	DBName       string
 	DBSchemaName string
 
 	// Alchemy
@@ -72,7 +74,8 @@ func initDatabase(ctx context.Context, cfg ApplicationParams) (*postgres.Postgre
 
 // Connect postgres
 func connect(cfg ApplicationParams) (*pgxpool.Pool, error) {
-	dsn := fmt.Sprintf("user=%s password=%s database=%s search_path=%s", cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSchemaName)
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s database=%s search_path=%s  sslmode=disable",
+		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName, cfg.DBSchemaName)
 
 	config, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
