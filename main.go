@@ -7,8 +7,8 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 
-	"github.com/islu/ASS0720/internal/router"
-	"github.com/islu/ASS0720/internal/usecase"
+	"github.com/islu/HW0720/internal/router"
+	"github.com/islu/HW0720/internal/usecase"
 )
 
 func initAppConfig() *usecase.ApplicationParams {
@@ -59,9 +59,9 @@ func main() {
 
 // Setup Gin route and run Gin server
 //
-//	@title			Assignment 0720
+//	@title			HW0720
 //	@version		1.0
-//	@description	Assignment 0720
+//	@description	HW0720
 //	@host			localhost:8080
 //	@basePath		/api/v1
 func setupGinRoute(app *usecase.Application) {

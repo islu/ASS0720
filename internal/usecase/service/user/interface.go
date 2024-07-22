@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/islu/ASS0720/internal/domain/user"
+	"github.com/islu/HW0720/internal/domain/user"
 )
 
 type UserTaskRepository interface {

@@ -14,7 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 
-	"github.com/islu/ASS0720/internal/domain/user"
+	"github.com/islu/HW0720/internal/domain/user"
 )
 
 const (

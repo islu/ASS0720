@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/islu/ASS0720/internal/domain/common"
+	"github.com/islu/HW0720/internal/domain/common"
 
 	"github.com/gin-gonic/gin"
 )

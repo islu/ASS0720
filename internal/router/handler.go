@@ -3,9 +3,9 @@ package router
 import (
 	"net/http"
 
-	"github.com/islu/ASS0720/docs"
-	"github.com/islu/ASS0720/internal/domain/common"
-	"github.com/islu/ASS0720/internal/usecase"
+	"github.com/islu/HW0720/docs"
+	"github.com/islu/HW0720/internal/domain/common"
+	"github.com/islu/HW0720/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"     // swagger embed files

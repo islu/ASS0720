@@ -85,8 +85,8 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: Assignment 0720
-  title: Assignment 0720
+  description: HW0720
+  title: HW0720
   version: "1.0"
 paths:
   /dashboard/uniswap-log:

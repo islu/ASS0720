@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	psqlc "github.com/islu/ASS0720/internal/adapter/repository/postgres/postgres_sqlc"
-	"github.com/islu/ASS0720/internal/domain/user"
+	psqlc "github.com/islu/HW0720/internal/adapter/repository/postgres/postgres_sqlc"
+	"github.com/islu/HW0720/internal/domain/user"
 )
 
 // Create Uniswap USDC/ETH pair swap log

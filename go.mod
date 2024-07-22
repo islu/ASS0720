@@ -1,4 +1,4 @@
-module github.com/islu/ASS0720
+module github.com/islu/HW0720
 
 go 1.22
 

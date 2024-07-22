@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 
-	psqlc "github.com/islu/ASS0720/internal/adapter/repository/postgres/postgres_sqlc"
-	"github.com/islu/ASS0720/internal/domain/user"
+	psqlc "github.com/islu/HW0720/internal/adapter/repository/postgres/postgres_sqlc"
+	"github.com/islu/HW0720/internal/domain/user"
 )
 
 func (r *PostgresRepository) ListUserTask_Join(ctx context.Context, walletAddress string) ([]user.UserTask, error) {

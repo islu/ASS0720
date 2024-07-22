@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/islu/ASS0720/internal/domain/common"
-	"github.com/islu/ASS0720/internal/usecase"
+	"github.com/islu/HW0720/internal/domain/common"
+	"github.com/islu/HW0720/internal/usecase"
 )
 
 // @description	User status response

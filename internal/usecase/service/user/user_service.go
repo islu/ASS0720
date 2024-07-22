@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 
-	"github.com/islu/ASS0720/internal/domain/user"
+	"github.com/islu/HW0720/internal/domain/user"
 )
 
 // Get user tasks status by address
