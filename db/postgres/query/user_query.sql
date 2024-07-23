@@ -1,4 +1,8 @@
 
+/*
+    task
+*/
+
 -- Create task
 -- name: CreateTask :one
 INSERT INTO task (
@@ -8,13 +12,36 @@ INSERT INTO task (
 )
 RETURNING *;
 
--- Get task by task_group_no
+-- Get task
+-- name: GetTask :one
+SELECT * FROM task
+WHERE seqno = $1;
+
+-- List task
+-- name: ListTask :many
+SELECT * FROM task
+ORDER BY start_time;
+
+-- List task by task_group_no
 -- name: ListTaskByGroupNo :many
 SELECT * FROM task
 WHERE task_group_no = $1
 ORDER BY start_time;
 
--- Get user task
+/*
+    user_task
+*/
+
+-- Create user task
+-- name: CreateUserTask :one
+INSERT INTO user_task (
+    task_seqno, wallet_address, total_amount, point, status, create_time, update_time
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+)
+RETURNING *;
+
+-- List user task & task
 -- name: ListUserTask_Join :many
 SELECT
     t.task_name,

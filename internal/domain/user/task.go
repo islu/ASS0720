@@ -3,6 +3,7 @@ package user
 import "time"
 
 type Task struct {
+	Seqno       int
 	GroupNo     int
 	Name        string
 	Description string

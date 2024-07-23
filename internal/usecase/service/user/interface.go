@@ -8,7 +8,16 @@ import (
 )
 
 type UserTaskRepository interface {
-	// Get user points history for distributed tasks
+	// Create task
+	CreateTask(ctx context.Context, params user.Task) (*user.Task, error)
+	// List task
+	ListTask(ctx context.Context) ([]user.Task, error)
+	// List task by group number
+	ListTaskByGroupNo(ctx context.Context, groupNo int) ([]user.Task, error)
+
+	// Create user task
+	CreateUserTask(ctx context.Context, params user.UserTask) (*user.UserTask, error)
+	// List user task
 	ListUserTask_Join(ctx context.Context, walletAddress string) ([]user.UserTask, error)
 }
 
@@ -20,6 +29,6 @@ type BlockRepository interface {
 
 type UniswapClient interface {
 	GetUniswapPairV2SwapEvent(fromBlockNumber, toBlockNumber int64) ([]user.UniswapPairSwapEvent, error)
-	// Debug print
-	DebugPrint_UniswapPairV2SwapEvent()
+
+	DebugPrint_UniswapPairV2SwapEvent() // Debug print
 }

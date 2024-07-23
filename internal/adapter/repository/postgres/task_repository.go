@@ -31,17 +31,31 @@ func (r *PostgresRepository) CreateTask(ctx context.Context, params user.Task) (
 		return nil, err
 	}
 
-	result := &user.Task{
-		GroupNo:     int(task.TaskGroupNo),
-		Name:        task.TaskName,
-		Description: task.TaskDesc,
-		StartTime:   task.StartTime,
-		EndTime:     task.EndTime,
-	}
-	return result, tx.Commit(ctx)
+	result := buildTask(task)
+
+	return &result, tx.Commit(ctx)
 }
 
-// Get task list by group no
+// List tasks
+func (r *PostgresRepository) ListTask(ctx context.Context) ([]user.Task, error) {
+
+	q := psqlc.New(r.connPool)
+
+	list, err := q.ListTask(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var result []user.Task
+	for _, task := range list {
+		t := buildTask(task)
+		result = append(result, t)
+	}
+
+	return result, nil
+}
+
+// List tasks by group number
 func (r *PostgresRepository) ListTaskByGroupNo(ctx context.Context, groupNo int) ([]user.Task, error) {
 
 	q := psqlc.New(r.connPool)
@@ -53,14 +67,20 @@ func (r *PostgresRepository) ListTaskByGroupNo(ctx context.Context, groupNo int)
 
 	var result []user.Task
 	for _, task := range list {
-		result = append(result, user.Task{
-			GroupNo:     int(task.TaskGroupNo),
-			Name:        task.TaskName,
-			Description: task.TaskDesc,
-			StartTime:   task.StartTime,
-			EndTime:     task.EndTime,
-		})
+		t := buildTask(task)
+		result = append(result, t)
 	}
 
 	return result, nil
+}
+
+func buildTask(task psqlc.Task) user.Task {
+	return user.Task{
+		Seqno:       int(task.Seqno),
+		GroupNo:     int(task.TaskGroupNo),
+		Name:        task.TaskName,
+		Description: task.TaskDesc,
+		StartTime:   task.StartTime,
+		EndTime:     task.EndTime,
+	}
 }

@@ -13,6 +13,10 @@ import (
 )
 
 const createTask = `-- name: CreateTask :one
+/*
+    task
+*/
+
 INSERT INTO task (
     task_group_no, task_name, task_desc, start_time, end_time
 ) VALUES (
@@ -30,6 +34,10 @@ type CreateTaskParams struct {
 }
 
 // Create task
+//
+//	/*
+//	    task
+//	*/
 //
 //	INSERT INTO task (
 //	    task_group_no, task_name, task_desc, start_time, end_time
@@ -57,13 +65,130 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 	return i, err
 }
 
+const createUserTask = `-- name: CreateUserTask :one
+/*
+    user_task
+*/
+
+INSERT INTO user_task (
+    task_seqno, wallet_address, total_amount, point, status, create_time, update_time
+) VALUES (
+    $1, $2, $3, $4, $5, $6, $7
+)
+RETURNING task_seqno, wallet_address, total_amount, point, status, create_time, update_time
+`
+
+type CreateUserTaskParams struct {
+	TaskSeqno     int32
+	WalletAddress string
+	TotalAmount   int64
+	Point         int32
+	Status        string
+	CreateTime    time.Time
+	UpdateTime    time.Time
+}
+
+// Create user task
+//
+//	/*
+//	    user_task
+//	*/
+//
+//	INSERT INTO user_task (
+//	    task_seqno, wallet_address, total_amount, point, status, create_time, update_time
+//	) VALUES (
+//	    $1, $2, $3, $4, $5, $6, $7
+//	)
+//	RETURNING task_seqno, wallet_address, total_amount, point, status, create_time, update_time
+func (q *Queries) CreateUserTask(ctx context.Context, arg CreateUserTaskParams) (UserTask, error) {
+	row := q.db.QueryRow(ctx, createUserTask,
+		arg.TaskSeqno,
+		arg.WalletAddress,
+		arg.TotalAmount,
+		arg.Point,
+		arg.Status,
+		arg.CreateTime,
+		arg.UpdateTime,
+	)
+	var i UserTask
+	err := row.Scan(
+		&i.TaskSeqno,
+		&i.WalletAddress,
+		&i.TotalAmount,
+		&i.Point,
+		&i.Status,
+		&i.CreateTime,
+		&i.UpdateTime,
+	)
+	return i, err
+}
+
+const getTask = `-- name: GetTask :one
+SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
+WHERE seqno = $1
+`
+
+// Get task
+//
+//	SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
+//	WHERE seqno = $1
+func (q *Queries) GetTask(ctx context.Context, seqno int32) (Task, error) {
+	row := q.db.QueryRow(ctx, getTask, seqno)
+	var i Task
+	err := row.Scan(
+		&i.Seqno,
+		&i.TaskGroupNo,
+		&i.TaskName,
+		&i.TaskDesc,
+		&i.StartTime,
+		&i.EndTime,
+	)
+	return i, err
+}
+
+const listTask = `-- name: ListTask :many
+SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
+ORDER BY start_time
+`
+
+// List task
+//
+//	SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
+//	ORDER BY start_time
+func (q *Queries) ListTask(ctx context.Context) ([]Task, error) {
+	rows, err := q.db.Query(ctx, listTask)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.Seqno,
+			&i.TaskGroupNo,
+			&i.TaskName,
+			&i.TaskDesc,
+			&i.StartTime,
+			&i.EndTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTaskByGroupNo = `-- name: ListTaskByGroupNo :many
 SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
 WHERE task_group_no = $1
 ORDER BY start_time
 `
 
-// Get task by task_group_no
+// List task by task_group_no
 //
 //	SELECT seqno, task_group_no, task_name, task_desc, start_time, end_time FROM task
 //	WHERE task_group_no = $1
@@ -126,7 +251,7 @@ type ListUserTask_JoinRow struct {
 	UpdateTime    time.Time
 }
 
-// Get user task
+// List user task & task
 //
 //	SELECT
 //	    t.task_name,

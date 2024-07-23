@@ -7,6 +7,53 @@ import (
 	"github.com/islu/HW0720/internal/domain/user"
 )
 
+// Create user task
+func (r *PostgresRepository) CreateUserTask(ctx context.Context, params user.UserTask) (*user.UserTask, error) {
+
+	tx, err := r.connPool.Begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback(ctx)
+
+	q := psqlc.New(r.connPool)
+	qtx := q.WithTx(tx)
+
+	userTask, err := qtx.CreateUserTask(ctx, psqlc.CreateUserTaskParams{
+		TaskSeqno:     int32(params.TaskSeqno),
+		WalletAddress: params.WalletAddress,
+		Point:         int32(params.Points),
+		TotalAmount:   params.TotalAmount,
+		Status:        params.Status,
+		CreateTime:    params.CreateTime,
+		UpdateTime:    params.UpdateTime,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// Return the created task
+	task, err := qtx.GetTask(ctx, int32(userTask.TaskSeqno))
+	if err != nil {
+		return nil, err
+	}
+
+	result := &user.UserTask{
+		TaskName:        task.TaskName,
+		TaskDescription: task.TaskDesc,
+		TaskStartTime:   task.StartTime,
+		TaskEndTime:     task.EndTime,
+		WalletAddress:   userTask.WalletAddress,
+		Points:          int(userTask.Point),
+		TotalAmount:     userTask.TotalAmount,
+		Status:          userTask.Status,
+		CreateTime:      userTask.CreateTime,
+		UpdateTime:      userTask.UpdateTime,
+	}
+	return result, tx.Commit(ctx)
+}
+
+// List user task
 func (r *PostgresRepository) ListUserTask_Join(ctx context.Context, walletAddress string) ([]user.UserTask, error) {
 
 	q := psqlc.New(r.connPool)
