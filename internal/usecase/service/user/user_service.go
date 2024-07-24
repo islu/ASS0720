@@ -47,7 +47,7 @@ func (s *UserService) GetUserTaskStatus(ctx context.Context, walletAddress strin
 
 	// Update share pool task status
 	for _, share := range sharePoolTask {
-		updatedSharePoolTask := user.UpdateSharePoolTaskStatus(onboardingTask, share, currTime, logs)
+		updatedSharePoolTask := user.UpdateSharePoolTaskStatus(share, onboardingTask, currTime, logs)
 		updatedTasks = append(updatedTasks, updatedSharePoolTask)
 	}
 

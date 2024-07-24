@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -48,14 +47,17 @@ func UpdateOnboardingTaskStatus(onboardingTask UserTask, currTime time.Time, sou
 	updated := onboardingTask
 	updated.UpdateTime = currTime
 
-	if onboardingTask.TaskStartTime.After(currTime) {
-		updated.Status = UserTaskStatus_NotStarted
-		return updated
+	if onboardingTask.Status == UserTaskStatus_NotStarted {
+		if onboardingTask.TaskStartTime.After(currTime) {
+			updated.Status = UserTaskStatus_NotStarted
+			return updated
+		}
+		if onboardingTask.TaskEndTime.Before(currTime) {
+			updated.Status = UserTaskStatus_Outdated
+			return updated
+		}
 	}
-	if onboardingTask.TaskEndTime.Before(currTime) {
-		updated.Status = UserTaskStatus_Outdated
-		return updated
-	}
+
 	updated.Status = UserTaskStatus_InProgress
 
 	if updated.Status == UserTaskStatus_InProgress {
@@ -78,7 +80,7 @@ func UpdateOnboardingTaskStatus(onboardingTask UserTask, currTime time.Time, sou
 }
 
 // Update share pool task status
-func UpdateSharePoolTaskStatus(onboardingTask, sharePoolTask UserTask, currTime time.Time, source []UniswapPairSwapEvent) UserTask {
+func UpdateSharePoolTaskStatus(sharePoolTask, onboardingTask UserTask, currTime time.Time, source []UniswapPairSwapEvent) UserTask {
 
 	if sharePoolTask.Status == UserTaskStatus_Claimed {
 		return sharePoolTask
@@ -90,24 +92,25 @@ func UpdateSharePoolTaskStatus(onboardingTask, sharePoolTask UserTask, currTime 
 	updated := sharePoolTask
 	updated.UpdateTime = currTime
 
-	if sharePoolTask.TaskStartTime.After(currTime) {
-		updated.Status = UserTaskStatus_NotStarted
-		return updated
+	if sharePoolTask.Status == UserTaskStatus_NotStarted {
+		if sharePoolTask.TaskStartTime.After(currTime) {
+			updated.Status = UserTaskStatus_NotStarted
+			return updated
+		}
+		if sharePoolTask.TaskEndTime.Before(currTime) {
+			updated.Status = UserTaskStatus_Outdated
+			return updated
+		}
 	}
-	if sharePoolTask.TaskEndTime.Before(currTime) {
-		updated.Status = UserTaskStatus_Outdated
-		return updated
-	}
+
 	updated.Status = UserTaskStatus_InProgress
 
 	if updated.Status == UserTaskStatus_InProgress {
 
 		usdc, points := GetSharePoolTaskEarnPoint(sharePoolTask, source)
 
-		fmt.Println(updated.TaskName, usdc, points)
-
 		// Check if onboarding task is completed
-		if onboardingTask.Status == UserTaskStatus_Claimed {
+		if onboardingTask.Status == UserTaskStatus_Claimed && onboardingTask.Points > 0 {
 			updated.Points = points
 			updated.TotalAmount = usdc
 		} else {
