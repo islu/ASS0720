@@ -222,6 +222,7 @@ func (q *Queries) ListTaskByGroupNo(ctx context.Context, taskGroupNo int32) ([]T
 
 const listUserTask_Join = `-- name: ListUserTask_Join :many
 SELECT
+    ut.task_seqno,
     t.task_name,
     t.task_desc,
     t.start_time,
@@ -239,6 +240,7 @@ ORDER BY t.start_time desc
 `
 
 type ListUserTask_JoinRow struct {
+	TaskSeqno     int32
 	TaskName      pgtype.Text
 	TaskDesc      pgtype.Text
 	StartTime     pgtype.Timestamptz
@@ -254,6 +256,7 @@ type ListUserTask_JoinRow struct {
 // List user task & task
 //
 //	SELECT
+//	    ut.task_seqno,
 //	    t.task_name,
 //	    t.task_desc,
 //	    t.start_time,
@@ -278,6 +281,7 @@ func (q *Queries) ListUserTask_Join(ctx context.Context, walletAddress string) (
 	for rows.Next() {
 		var i ListUserTask_JoinRow
 		if err := rows.Scan(
+			&i.TaskSeqno,
 			&i.TaskName,
 			&i.TaskDesc,
 			&i.StartTime,
@@ -297,4 +301,48 @@ func (q *Queries) ListUserTask_Join(ctx context.Context, walletAddress string) (
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateUserTask = `-- name: UpdateUserTask :one
+UPDATE user_task
+SET total_amount = $2, point = $3, status = $4, update_time = $5
+WHERE task_seqno = $1 AND wallet_address = $6
+RETURNING task_seqno, wallet_address, total_amount, point, status, create_time, update_time
+`
+
+type UpdateUserTaskParams struct {
+	TaskSeqno     int32
+	TotalAmount   int64
+	Point         int32
+	Status        string
+	UpdateTime    time.Time
+	WalletAddress string
+}
+
+// Update user task
+//
+//	UPDATE user_task
+//	SET total_amount = $2, point = $3, status = $4, update_time = $5
+//	WHERE task_seqno = $1 AND wallet_address = $6
+//	RETURNING task_seqno, wallet_address, total_amount, point, status, create_time, update_time
+func (q *Queries) UpdateUserTask(ctx context.Context, arg UpdateUserTaskParams) (UserTask, error) {
+	row := q.db.QueryRow(ctx, updateUserTask,
+		arg.TaskSeqno,
+		arg.TotalAmount,
+		arg.Point,
+		arg.Status,
+		arg.UpdateTime,
+		arg.WalletAddress,
+	)
+	var i UserTask
+	err := row.Scan(
+		&i.TaskSeqno,
+		&i.WalletAddress,
+		&i.TotalAmount,
+		&i.Point,
+		&i.Status,
+		&i.CreateTime,
+		&i.UpdateTime,
+	)
+	return i, err
 }

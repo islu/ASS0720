@@ -69,7 +69,10 @@ func RegisterHandlers(app *usecase.Application) *gin.Engine {
 		// Get user tasks status by address
 		userGroup.GET("/tasks/:address", GetUserTaskStatus(app))
 		// Get user points history for distributed tasks
-		userGroup.GET("/tasks", GetUserPointsHistory(app))
+		userGroup.POST("/points", GetUserPointsHistory(app))
+
+		// Assumption: Distribute tasks for user
+		userGroup.POST("/distribute", DistributeTasks(app))
 	}
 
 	// Other handlers

@@ -52,7 +52,44 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/tasks": {
+        "/user/distribute": {
+            "post": {
+                "description": "Distribute tasks for user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Distribute tasks for user",
+                "parameters": [
+                    {
+                        "description": "User tasks request body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/UserTasksBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/SuccessMessageResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    }
+                }
+            }
+        },
+        "/user/points": {
             "post": {
                 "description": "Get user points history for distributed tasks",
                 "consumes": [
@@ -206,7 +243,7 @@ const docTemplate = `{
                 },
                 "walletAddress": {
                     "type": "string",
-                    "example": "0x1234.."
+                    "example": "0xb36ce3F521a1FF4B0CffB82DDd71F0a51fCf56ce"
                 }
             }
         },
@@ -219,7 +256,7 @@ const docTemplate = `{
             "properties": {
                 "walletAddress": {
                     "type": "string",
-                    "example": "0x1234.."
+                    "example": "0xb36ce3F521a1FF4B0CffB82DDd71F0a51fCf56ce"
                 }
             }
         },

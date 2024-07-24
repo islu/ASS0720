@@ -19,6 +19,8 @@ type UserTaskRepository interface {
 	CreateUserTask(ctx context.Context, params user.UserTask) (*user.UserTask, error)
 	// List user task
 	ListUserTask_Join(ctx context.Context, walletAddress string) ([]user.UserTask, error)
+	// Update user task
+	UpdateUserTask(ctx context.Context, walletAddress string, params user.UserTask) (*user.UserTask, error)
 }
 
 type BlockRepository interface {

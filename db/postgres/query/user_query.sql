@@ -44,6 +44,7 @@ RETURNING *;
 -- List user task & task
 -- name: ListUserTask_Join :many
 SELECT
+    ut.task_seqno,
     t.task_name,
     t.task_desc,
     t.start_time,
@@ -58,3 +59,10 @@ FROM user_task ut
 LEFT JOIN task t ON ut.task_seqno = t.seqno
 WHERE ut.wallet_address = $1
 ORDER BY t.start_time desc;
+
+-- Update user task
+-- name: UpdateUserTask :one
+UPDATE user_task
+SET total_amount = $2, point = $3, status = $4, update_time = $5
+WHERE task_seqno = $1 AND wallet_address = $6
+RETURNING *;

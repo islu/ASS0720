@@ -54,14 +54,14 @@ definitions:
         example: "2024-07-02T00:00:00Z"
         type: string
       walletAddress:
-        example: 0x1234..
+        example: 0xb36ce3F521a1FF4B0CffB82DDd71F0a51fCf56ce
         type: string
     type: object
   UserTasksBody:
     description: User tasks request body
     properties:
       walletAddress:
-        example: 0x1234..
+        example: 0xb36ce3F521a1FF4B0CffB82DDd71F0a51fCf56ce
         type: string
     required:
     - walletAddress
@@ -113,7 +113,31 @@ paths:
       summary: Update Uniswap USDC/ETH pair swap log
       tags:
       - dashboard
-  /user/tasks:
+  /user/distribute:
+    post:
+      consumes:
+      - application/json
+      description: Distribute tasks for user
+      parameters:
+      - description: User tasks request body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/UserTasksBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/SuccessMessageResponse'
+        "400":
+          description: Bad Request
+      summary: Distribute tasks for user
+      tags:
+      - user
+  /user/points:
     post:
       consumes:
       - application/json

@@ -25,7 +25,7 @@ CREATE TABLE
         wallet_address varchar(255) NOT NULL,
         total_amount bigint NOT NULL,
         point int NOT NULL,
-        status varchar(10) NOT NULL,
+        status varchar(30) NOT NULL,
         create_time timestamptz NOT NULL,
         update_time timestamptz NOT NULL
     );
